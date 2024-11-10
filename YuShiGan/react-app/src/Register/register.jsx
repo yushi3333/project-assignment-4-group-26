@@ -1,7 +1,7 @@
 import { useRef, useState, useEffect } from "react";
 import { faCheck, faTimes, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import axios from '../api/axios'
+import {useNavigate} from 'react-router-dom';
 import '../Register/register.css';
 
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
@@ -10,6 +10,7 @@ const REGISTER_URL = '/register' //endpoint API
 const Register = () =>{
     const userRef = useRef();
     const errRef = useRef();
+    const navigate = useNavigate();
 
     const [user, setUser] = useState('');
     const [validName, setValidName] = useState(false);
@@ -53,7 +54,21 @@ const Register = () =>{
             return;//do not submit any thing just return
 
         }
+        if (pwd !== matchPwd){
+            setErrMsg("passwords does not match");
+            return;
+
+        }
+       
+
+        //user data in local storage
+        const userData = {user, pwd};
+        localStorage.setItem("user", JSON.stringify(userData));
         setSuccess(true);
+        setTimeout(()=>{
+            navigate("/login"); //redirect to login page
+        },2);
+        
         
         /*
         try{
@@ -85,12 +100,16 @@ const Register = () =>{
     }
 
     return (
+        /*
         success ? (
             <section>
             <h1>Success</h1>
             <p><a href="#">Sign in </a></p>
             </section>
+            
+    
         ) : (
+            */
         <section>
             <p ref={errRef} className={errMsg ? "errmsg" : "offscreen"} aria-live="assertive">{errMsg}</p>
             <h1>Register</h1>
@@ -178,8 +197,8 @@ const Register = () =>{
             <p>
                 Already registered?<br />
                 <span className="line">
-                    {/*put router link here*/}
-                    <a href="#">Sign In</a>
+                    
+                    <a href="/login">Log In</a>
                 </span>
             </p>
 
@@ -187,7 +206,9 @@ const Register = () =>{
 
 
         </section>
-        )
+
+       // )
+
     )
 }
 

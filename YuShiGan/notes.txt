@@ -11,3 +11,6 @@ npm install --save @fortawesome/react-fontawesome
 
 #install axios
 npm i axios
+
+#install router
+npm install react-router-dom
