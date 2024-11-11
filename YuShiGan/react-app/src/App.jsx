@@ -7,24 +7,28 @@ import './App.css'
 import Register from './Register/register.jsx'
 import Login from '../src/Login/login.jsx'
 import Home from "../src/Home/home.jsx"
+import { Provider } from 'react-redux';
+import store from "./store.js";
 
 function App() {
   
 
   return (
-    <Router>
-       <main className = "App">
-        <Routes>
-          <Route path="/login" element={<Login/>}/>
-          <Route path="/" element={<Register/>}/>
-          <Route path="/home" element={<Home/>}/>
+    <Provider store={store}>
+        <Router>
+        <main className = "App">
+          <Routes>
+            <Route path="/login" element={<Login/>}/>
+            <Route path="/" element={<Register/>}/>
+            <Route path="/home" element={<Home/>}/>
 
-        </Routes>
-      
-      
-      </main>
+          </Routes>
+        </main>
+      </Router>
 
-    </Router>
+    </Provider>
+    
+   
    
     
   );
