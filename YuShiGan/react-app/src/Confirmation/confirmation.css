@@ -1,0 +1,20 @@
+.order-item {
+    display: flex;
+    align-items: center;
+    gap: 20px;  /* Space between image and details */
+    margin-bottom: 15px;
+}
+
+.order-image {
+    width: 100px;  /* Set appropriate width */
+    height: auto;  /* Keep aspect ratio */
+    border-radius: 8px;  /* Optional: add rounded corners */
+    border: 1px solid #ddd;  /* Optional: add border for a neat look */
+}
+
+.order-summary {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f9f9f9;  /* Optional: add a subtle background */
+    border-radius: 8px;  /* Optional: add rounded corners */
+}
