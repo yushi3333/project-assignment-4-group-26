@@ -1,11 +1,13 @@
 import React from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeItem, updateQuantity } from '../Cart/CartSlice';
+import { useNavigate } from 'react-router-dom';
 import '../Cart/CartItem.css';
 
 const CartItem = ({ onContinueShopping }) => {
   const cart = useSelector(state => state.cart.items);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   
 
   // Calculate total amount for all products in the cart
@@ -39,7 +41,8 @@ const CartItem = ({ onContinueShopping }) => {
   };
 
   const handleCheckoutShopping = (e) => {
-    alert('Functionality to be added for future reference');
+    navigate('/payment')
+
   };
 
   // Calculate total cost based on quantity for an item

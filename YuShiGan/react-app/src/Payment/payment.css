@@ -1,0 +1,42 @@
+.payment-container {
+    width: 100%;
+    max-width: 800px;  /* Restricting the max width for larger screens */
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.payment-form {
+    display: flex;
+    flex-wrap: wrap;  /* Ensures that elements wrap to the next line if they don't fit */
+    gap: 1rem;  /* Adds consistent spacing between inputs */
+    justify-content: center;  /* Centers the inputs */
+    margin-top: 20px;
+}
+
+.payment-form input {
+    flex: 1 1 calc(25% - 1rem);  /* Each input takes 25% of the container width minus the gap */
+    padding: 0.75rem;
+    min-width: 150px;  /* Ensures inputs are not too small */
+    max-width: 200px;  /* Prevents inputs from being too wide */
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.payment-button {
+    margin-top: 20px;
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.payment-button:hover {
+    background-color: #0056b3;
+}
