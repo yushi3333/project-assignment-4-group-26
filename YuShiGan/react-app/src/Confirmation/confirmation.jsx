@@ -12,7 +12,7 @@ const confirmation = () =>{
         
         // Ensure cart is not empty or undefined
         if (!cart || cart.length === 0) return "0.00";
-        return cart.reduce((totalCost, item) => totalCost + (item.cost * item.quantity), 0).toFixed(2);
+        return cart.reduce((totalCost, item) => totalCost + (item.price * item.quantity), 0);
     };
 
     const handleBackHome=() =>{
@@ -29,7 +29,7 @@ const confirmation = () =>{
                 {cart.map(item=>(
                     <div key={item.name} className="order-item">
                         <img src={item.image} className='order-image'/>
-                        <p>{item.name}(Quantity:{item.quantity}) - ${item.cost.toFixed(2)}</p>
+                        <p>{item.name}(Quantity:{item.quantity}) - ${item.price}</p>
                         
                     </div>
                 ))
