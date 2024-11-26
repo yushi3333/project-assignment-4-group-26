@@ -4,6 +4,8 @@ console.log('MONGO_URI:', process.env.MONGO_URI);
 const express = require('express');
 const cors = require('cors');
 const { connectToDb, getDb } = require('./utils/db');
+const userRoutes = require('./routes/userRoutes');
+
 
 
 const app = express();
@@ -19,6 +21,10 @@ async function startServer() {
     // Connect to MongoDB
     await connectToDb();
     console.log('Connected to MongoDB successfully');
+    // Use the user routes
+    app.use('/api/users', userRoutes);
+
+   
 
    
 
