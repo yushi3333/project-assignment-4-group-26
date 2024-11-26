@@ -5,6 +5,7 @@ const express = require('express');
 const cors = require('cors');
 const { connectToDb, getDb } = require('./utils/db');
 const userRoutes = require('./routes/userRoutes');
+const productRoutes = require('./routes/productRoutes')
 
 
 
@@ -23,6 +24,7 @@ async function startServer() {
     console.log('Connected to MongoDB successfully');
     // Use the user routes
     app.use('/api/users', userRoutes);
+    app.use('/api/products', productRoutes);
 
    
 

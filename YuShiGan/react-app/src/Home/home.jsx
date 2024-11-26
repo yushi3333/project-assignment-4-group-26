@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from '../Cart/CartSlice';
 import CartItem from '../Cart/CartItem';
 import '../Home/productList.css'
+import axios from 'axios';
 
 //import the images
 import laptop from '../../img/lenvo-1.avif';
@@ -69,11 +70,27 @@ const elecArray = [
 
 ]
 
+
 const Home = ()=>{
+    const [Products, setProducts] = useState([]);
     const navigate = useNavigate();
     const handleLogOut=()=>{
         navigate("/")
     }
+    
+    useEffect (()=>{
+        const fetchProducts = async()=>{
+            try{
+                const response = await axios.get('http://localhost:3002/api/products')
+                const data = await response.data;
+                setProducts(data);
+                console.log('Fetched products:', data);
+            }catch(error){
+                console.log("error fetching all products:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
 
     const [showCart, setShowCart] = useState(false); 
     const [addedToCart, setAddedToCart] = useState({});
@@ -97,12 +114,17 @@ const Home = ()=>{
     };
 
     const styleObj={
+        position: 'fixed', // Makes the navbar fixed at the top
+        top: 0, // Position it at the very top
+        left: 0,
+        right: 0,
+        zIndex: 1000, // Makes sure it stays above other elements
         backgroundColor: '#FA8072',
-        color: '#fff!important',
+        color: '#fff',
         padding: '15px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignIems: 'center',
+        alignItems: 'center',
         fontSize: '20px',
        }
        const styleObjUl={
@@ -139,7 +161,6 @@ const Home = ()=>{
 
     return(
         <div> 
-
             <div className="navbar" style={styleObj}>
                 <div className="tag">
                     <div className="luxury">
@@ -160,7 +181,7 @@ const Home = ()=>{
                     <div><SearchBar onSearch={handleSearch }/></div>
     */}
                     <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
-                        <h1 className='cart'>
+                        <h2 className='cart'>
                             <svg xmlns="http://www.w3.org/2000/svg" 
                             viewBox="0 0 256 256" 
                             id="IconChangeColor" 
@@ -171,11 +192,11 @@ const Home = ()=>{
                             <circle cx="184" cy="216" r="12"></circle>
                             <path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" id="mainIconPathAttribute"></path>
                             </svg>
-                            <h1 className='cart_quantity_count'>
+                            <div className='cart_quantity_count'>
                                 {calculateTotalItemQuantity()}
-                            </h1>
+                            </div>
 
-                         </h1>                
+                         </h2>                
                     </a></div>
 
                 </div>
@@ -184,26 +205,41 @@ const Home = ()=>{
             {/* Conditional rendering for Cart or Product List */}
             {showCart ? (
                 <CartItem onContinueShopping={handleContinueShopping} />
-            ) : (
+            ) : !showCart && Products.length > 0?( 
                 <div className="product-grid">
-                    {elecArray.map((category, index) => (
-                        <div key={index}>
-                            <h1>{category.category}</h1>
-                            <div className="product-list">
-                                {category.electrons.map((electron, index) => (
-                                    <div className="product-card" key={index}>
-                                        <img className="product-image" src={electron.image} alt={electron.name} />
-                                        <div className="product-title">{electron.name}</div>
-                                        <div className="product-description">{electron.description}</div>
-                                        <div className="product-price">${electron.cost}</div>
-                                        <button className="product-button" onClick={() => handleAddToCart(electron)}>Add To Cart</button>
+                    {['Lenovo laptop','Dell laptop'].map((category)=>{
+                        //filter
+                        const categoryProducts = Products.filter(product=>product.category === category);
+                        if (categoryProducts.length > 0){
+                            return(
+                                <div key={category}>
+                                    <h2 className="product-category">{category}</h2>
+                                    <div className="product-list">
+                                        {categoryProducts.map((product, index) => (
+                                            <div className="product-card" key={index}>
+                                                <img className="product-image" src={product.image} alt={product.name}/>
+                                                <div className="product-title">{product.name}</div>
+                                                <div className="product-description">{product.description}</div>
+                                                <div className="product-price">{product.price}</div>
+                                                <button className="product-button" onClick={()=>handleAddToCart(product)}>Add to Cart</button>
+                                                
+
+                                            </div>
+                                        ))}
                                     </div>
-                                ))}
-                            </div>
-                        </div>
-                    ))}
+
+                                </div>
+                            )
+                        }
+                    })
+                    }
+
                 </div>
-            )}              
+
+                ):(
+                    <p>Loading products...</p>
+                )     
+            }              
         </div>
           
     );

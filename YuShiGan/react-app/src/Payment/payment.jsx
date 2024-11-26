@@ -10,7 +10,7 @@ const payment = () =>{
 
     //calculate the total amount for all products in the cart
     const calculateTotalAmount = () =>{
-        return cart.reduce((totalCost, item) => totalCost + (item.cost * item.quantity), 0).toFixed(2)
+        return cart.reduce((totalCost, item) => totalCost + (item.price * item.quantity), 0).toFixed(2)
     };
     const handlePayment = () =>{
         setIsProcessing(true);
