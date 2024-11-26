@@ -26,24 +26,7 @@ async function startServer() {
     app.use('/api/users', userRoutes);
     app.use('/api/products', productRoutes);
 
-   
-
-   
-
-    // Get products from the database (example route)
-  
-    // app.get('/api/products', async (req, res) => {
-    //   try {
-    //     const db = getDb(); // Get the database reference
-    //     const productsCollection = db.collection('Products'); // Access 'Products' collection
-    //     const products = await productsCollection.find().toArray();
-    //     console.log('Products fetched:', products);
-    //     res.status(200).json(products);
-    //   } catch (error) {
-    //     res.status(500).json({ message: 'Failed to fetch products', error });
-    //   }
-    // });
-
+ 
     // Start the server after connecting to MongoDB
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);

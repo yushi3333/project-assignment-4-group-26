@@ -25,12 +25,10 @@ const getProductsById = async (req,res)=>{
         console.log("the product is :", product)
         if (product){
             res.status(200).json(product);
-
         }
         else{
             res.status(404).json({message: "product not found"})
         }
-
     }
     catch(error){
         res.status(500).json({message: "failed to fetch product", product})
@@ -43,7 +41,6 @@ const createProducts = async (req, res) => {
         const db = getDb();
         const productCollection = db.collection("Products");
         const newProduct= req.body;
-
         const result = await productCollection.insertOne(newProduct)
         res.status(201).json({message: "Product create successfully", product: result.ops[0]});
 
@@ -101,7 +98,8 @@ const deleteProducts = async (req, res)=>{
         const db = getDb();
         const productCollection = db.collection("Products")
         const result = await productCollection.deleteOne({_id: new ObjectId(req.params.id)});
-        if (result.deleteCount === 1){
+        console.log("the deleted product is ", result)
+        if (result.deletedCount === 1){
             res.status(200).json({message: "Product deleted successfully"})
 
         }else{

@@ -7,6 +7,7 @@ const ProductForm = ({ product, onSubmit }) => {
     description: '',
     price: '',
     stock: '',
+    image:''
   });
 
   // When the product prop changes, populate the form
@@ -18,6 +19,7 @@ const ProductForm = ({ product, onSubmit }) => {
         description: product.description,
         price: product.price,
         stock: product.stock,
+        image:product.image
       });
     } else {
       setFormData({
@@ -26,6 +28,7 @@ const ProductForm = ({ product, onSubmit }) => {
         description: '',
         price: '',
         stock: '',
+        image: ''
       });
     }
   }, [product]);
@@ -39,7 +42,11 @@ const ProductForm = ({ product, onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(formData);
+    onSubmit({
+      ...formData,
+      price:parseFloat(formData.price),
+      stock:parseInt(formData.stock),
+    });
   };
 
   return (
@@ -82,6 +89,13 @@ const ProductForm = ({ product, onSubmit }) => {
         onChange={handleChange}
         placeholder="Stock Quantity"
         required
+      />
+      <input
+      type = "text"
+      name = "image"
+      value = {formData.image}
+      onChange = {handleChange}
+      placeholder="image url"
       />
       <button type="submit">{product ? 'Update Product' : 'Add Product'}</button>
     </form>
