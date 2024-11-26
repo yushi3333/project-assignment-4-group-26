@@ -123,6 +123,16 @@ body {
     transition: background-color 0.3s ease-in-out;
     margin-bottom: 1px;
 }
+.disabled-button{
+    background-color:black;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+    margin-bottom: 1px;
+
+}
 
 /* Pseudo-elements - Sale badge */
 .product-card::before {

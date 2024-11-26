@@ -111,6 +111,11 @@ const Home = ()=>{
            ...prevState,
            [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
          }));
+         setProducts((prevProducts) =>
+             prevProducts.map((p) =>
+                 p._id === product._id ? {...p, stock: p.stock-1} : p
+             )
+         )
     };
 
     const styleObj={
@@ -220,8 +225,11 @@ const Home = ()=>{
                                                 <img className="product-image" src={product.image} alt={product.name}/>
                                                 <div className="product-title">{product.name}</div>
                                                 <div className="product-description">{product.description}</div>
-                                                <div className="product-price">{product.price}</div>
-                                                <button className="product-button" onClick={()=>handleAddToCart(product)}>Add to Cart</button>
+                                                <div className="product-price">${product.price}</div>
+
+                                                <button className={product.stock === 0 ? "disabled-button" : "product-button"}onClick={()=>handleAddToCart(product)}
+                                                disabled={product.stock === 0}
+                                                >{product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}</button>
                                                 
 
                                             </div>
