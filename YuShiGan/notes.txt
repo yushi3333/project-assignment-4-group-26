@@ -17,8 +17,13 @@ npm install react-router-dom
 
 npm install react-redux @reduxjs/toolkit
 
-
 npm install dotenv
 
 npm install mongodb
+
+npm install node-fetch
+
+npm install puppeteer
+
+
 

@@ -5,7 +5,8 @@ const express = require('express');
 const cors = require('cors');
 const { connectToDb, getDb } = require('./utils/db');
 const userRoutes = require('./routes/userRoutes');
-const productRoutes = require('./routes/productRoutes')
+const productRoutes = require('./routes/productRoutes');
+const reviewRoutes = require('./routes/reviewRoutes'); 
 
 
 
@@ -22,9 +23,10 @@ async function startServer() {
     // Connect to MongoDB
     await connectToDb();
     console.log('Connected to MongoDB successfully');
-    // Use the user routes
+    //routes
     app.use('/api/users', userRoutes);
     app.use('/api/products', productRoutes);
+    app.use('/api/reviews', reviewRoutes);
 
  
     // Start the server after connecting to MongoDB
@@ -33,7 +35,7 @@ async function startServer() {
     });
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
-    process.exit(1); // Exit the process if unable to connect to MongoDB
+    process.exit(1); 
   }
 }
 

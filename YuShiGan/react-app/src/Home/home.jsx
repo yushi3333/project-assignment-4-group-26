@@ -5,78 +5,66 @@ import { addItem } from '../Cart/CartSlice';
 import CartItem from '../Cart/CartItem';
 import '../Home/productList.css'
 import axios from 'axios';
-
-//import the images
-import laptop from '../../img/lenvo-1.avif';
-import laptop2 from '../../img/lenvo-2.1.avif';
-import laptop3 from '../../img/lenvo-3.1.avif';
-import dell1 from '../../img/dell-1.1.avif';
-import dell2 from '../../img/dell-1.2.avif';
-import dell3 from '../../img/dell-1.3.avif';
 import logo from '../../img/log.png';
-const elecArray = [
-    {
-        category: "Lenvo laptop",
-        electrons:[
-            {
-                name:"Legion 7i Gen 9 (16″ Intel) Gaming Laptop",
-                image: laptop,
-                description:"Processor: 14th Generation Intel® Core™ i7-14700HX Processor (E-Core Max 3.90 GHz, P-Core Max 5.50 GHz with Turbo Boost, 20 Cores, 28 Threads, 33 MB Cache)",
-                cost:2099.99
 
-            },
-            {
-                name:"Yoga Slim 7i Aura Edition (15″ Intel) Laptop",
-                image:laptop2,
-                description:"Processor: Intel® Core™ Ultra 7 256V Processor (E-cores up to 3.70 GHz P-cores up to 4.80 GHz with Turbo Boost, 8 Cores, 8 Threads, 12 MB Cache)",
-                cost:1699.99
-
-            },
-            {
-                name:"ThinkPad C14 Chromebook Enterprise (14” Intel) Laptop",
-                image:laptop3,
-                description:"Processor: 12th Generation Intel® Core™ i3-1215U Processor (E-Core Max 3.30 GHz, P-Core Max 4.40 GHz with Turbo Boost, 6 Cores, 8 Threads, 10 MB Cache)",
-                cost:537.1
-
-            }
-
-        ]
-
-    },
-    {
-        category:"Dell Laptop",
-        electrons:[
-            {
-                name:"G15 Gaming Laptop",
-                image: dell1,
-                description:"Processor: 13th Gen Intel® Core™ i7-13650HX (24 MB cache, 14 cores, 20 threads, up to 4.90 GHz Turbo)",
-                cost:1599.99
-            },
-            {
-                name:"Precision 3591 Workstation",
-                image: dell2,
-                description:"Processor: Intel® Core™ Ultra 9 185H vPro® Enterprise (24 MB cache, 16 cores, 22 threads, up to 5.1 GHz, 45W)",
-                cost:3589.00
-            },
-            {
-                name:"Chromebook 3110 Laptop",
-                image: dell3,
-                description:"Processor: Intel® Celeron™ N4500 (Dual Core, up to 2.8GHz, 4M Cache, 6W), 4GB Memory, 64GB Storage",
-                cost:586.61
-            },
-        ]
-    }
-    
-
-]
 
 
 const Home = ()=>{
     const [Products, setProducts] = useState([]);
+    
+    const [reviews, setReviews] = useState({});
+
+    const [loadingReviews, setLoadingReviews] = useState({});
+
+    const [reviewError, setReviewError] = useState({});
     const navigate = useNavigate();
     const handleLogOut=()=>{
         navigate("/")
     }
+    const handleReviewClick = async (product) => {
+        
+        const { productUrl, _id } = product;
+        console.log("Product URL:", productUrl);
+        // Set loading for the specific product
+        setLoadingReviews((prevLoading) => ({
+            ...prevLoading,
+            [_id]: true,
+        }));
+        
+        
+        
+    
+        try {
+            const response = await axios.post('http://localhost:3002/api/reviews/get-reviews', {
+                productUrl
+            });
+    
+            if (response.data.success) {
+                console.log("The rating data: ", response.data);
+                setReviews((prevReviews) => ({
+                    ...prevReviews,
+                    [_id]: response.data,
+                }));
+            } else {
+                setReviewError((prevLoading)=>({
+                    ...prevLoading,
+                    [_id]:true
+                }))
+            }
+        } catch (err) {
+            setReviewError((prevLoading)=>({
+                ...prevLoading,
+                [_id]:true
+            }))
+        } finally {
+            // Remove loading for the specific product
+            setLoadingReviews((prevLoading) => ({
+                ...prevLoading,
+                [_id]: false,
+            }));
+            
+        }
+    };
     
     useEffect (()=>{
         const fetchProducts = async()=>{
@@ -119,7 +107,7 @@ const Home = ()=>{
     };
 
     const styleObj={
-        position: 'fixed', // Makes the navbar fixed at the top
+        position: 'fixed', // navbar at the top
         top: 0, // Position it at the very top
         left: 0,
         right: 0,
@@ -226,10 +214,26 @@ const Home = ()=>{
                                                 <div className="product-title">{product.name}</div>
                                                 <div className="product-description">{product.description}</div>
                                                 <div className="product-price">${product.price}</div>
-
                                                 <button className={product.stock === 0 ? "disabled-button" : "product-button"}onClick={()=>handleAddToCart(product)}
                                                 disabled={product.stock === 0}
                                                 >{product.stock > 0 ? 'Add to Cart' : 'Out of Stock'}</button>
+                                                <button className="review-button"
+                                                onClick={() => handleReviewClick(product)}
+                                                >
+                                                    Review
+                                                </button>
+                                                {loadingReviews[product._id] && <p>Loading reviews...</p>}
+
+                                                {reviewError[product._id] && <p style={{ color: 'red' }}>Error: {reviewError[product._id]}</p>}
+
+                                                {/* Rendering reviews for this product */}
+                                                {reviews[product._id] && (
+                                                    <div className="reviews-section">
+                                                        <h3>Product Reviews</h3>
+                                                        <p>Rating: {reviews[product._id].rating}</p>
+                                                        <p>Review Count: {reviews[product._id].count}</p>
+                                                    </div>
+                                                )}
                                                 
 
                                             </div>
