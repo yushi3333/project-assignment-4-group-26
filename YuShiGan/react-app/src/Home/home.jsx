@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { addItem } from '../Cart/CartSlice';
+import { addItem, updateQuantity, clearCart } from '../Cart/CartSlice';
 import CartItem from '../Cart/CartItem';
 import '../Home/productList.css';
 import axios from 'axios';
 import logo from '../../img/log.png';
+
 
 const Home = () => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -15,12 +16,14 @@ const Home = () => {
     const [reviewError, setReviewError] = useState({});
     const [showCart, setShowCart] = useState(false);
     const [addedToCart, setAddedToCart] = useState({});
+    
+    const username = localStorage.getItem('username');
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
     // Get cart items from Redux store
-    const cart = useSelector((state) => state.cart.items);
+    const cart = useSelector((state) => state.cart.items || []);
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -37,7 +40,51 @@ const Home = () => {
     }, []);
 
     const handleLogOut = () => {
-        navigate("/");
+        
+        dispatch(clearCart())
+        localStorage.removeItem('token');
+        localStorage.removeItem('role');
+        localStorage.removeItem('username');
+        navigate("/login");
+
+    };
+
+    const handleOpenDetails = (product) => {
+        const newWindow = window.open("", "_blank", "width=600,height=400");
+        newWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Product Details</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                        padding: 20px;
+                        line-height: 1.6;
+                    }
+                    img {
+                        max-width: 100%;
+                        height: auto;
+                    }
+                    .details {
+                        margin-top: 20px;
+                    }
+                </style>
+            </head>
+            <body>
+                <h1>${product.name}</h1>
+                <img src="${product.image}" alt="${product.name}" />
+                <div class="details">
+                    <p><strong>Description:</strong> ${product.description || "No description available"}</p>
+                    <p><strong>Price:</strong> $${product.price}</p>
+                    <p><strong>Stock:</strong> ${product.stock}</p>
+                </div>
+                <button onclick="window.close()">Close</button>
+            </body>
+            </html>
+        `);
     };
 
     const handleReviewClick = async (product) => {
@@ -80,16 +127,40 @@ const Home = () => {
     };
 
     const handleAddToCart = (product) => {
-        dispatch(addItem(product));
-        setAddedToCart((prevState) => ({
-            ...prevState,
-            [product.name]: true,
-        }));
-        setProducts((prevProducts) =>
-            prevProducts.map((p) =>
-                p._id === product._id ? { ...p, stock: p.stock - 1 } : p
-            )
-        );
+        const updatedProduct = Products.find(p => p._id === product._id);
+        if (updatedProduct && updatedProduct.stock > 0) {
+            const existingCartItem = cart.find((item) => item._id === product._id);
+    
+            if (existingCartItem) {
+                dispatch(updateQuantity({ _id: product._id, name: product.name, quantity: existingCartItem.quantity + 1 }));
+                
+            } else {
+                // Add the product to the cart with a quantity of 1
+                console.log("Adding new item to cart");
+                dispatch(addItem({
+                    _id: product._id, 
+                    name: product.name,
+                    quantity: 1,
+                    image: product.image,
+                    price: product.price,
+                    stock: product.stock
+                }));
+            }
+            
+            // Update the local Products state to decrease the stock by 1
+            setProducts((prevProducts) =>
+                prevProducts.map((p) =>
+                    p._id === product._id ? { ...p, stock: p.stock - 1 } : p
+                )
+            );
+    
+            setAddedToCart((prevState) => ({
+                ...prevState,
+                [product.name]: true,
+            }));
+        } else {
+            console.log("Out of stock");
+        }
     };
 
     const styleObj={
@@ -146,21 +217,28 @@ const Home = () => {
                 <div className="tag">
                     <div className="luxury">
                         <img src={logo} alt="" />
-                        <a href="/" style={{ textDecoration: 'none' }}>
+                        <a href="/login" onClick={username ? handleLogOut : null}style={{ textDecoration: 'none' }}>
                             <div>
                                 <h3 style={{ color: 'white' }}>Computer Store</h3>
-                                <i style={{ color: 'white' }}>Everything is in my pocket</i>
+                                <i style={{ color: 'white' }}>{username ? 'wanna logout?' : 'wanna login?'}</i>
+                               
+                                
                             </div>
                         </a>
                     </div>
                 </div>
                 <div style={styleObjUl}>
+                    {/* Show the logged-in user name in the navigation */}
+                    <div style={{color: 'white' }}>
+                        {username ? `Hello, ${username}` : 'Not logged in'}
+                    </div>
+                    
                     <input
                         type="text"
                         placeholder="Search by product name..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{ padding: '10px', marginBottom: '20px', width: '300px' }}
+                        style={{ padding: '10px',  width: '300px' }}
                     />
                     <div>
                         <a href="#" onClick={handleCartClick} style={styleA}>
@@ -196,10 +274,10 @@ const Home = () => {
 
             {/* Conditional rendering for Cart or Product List */}
             {showCart ? (
-                <CartItem onContinueShopping={handleContinueShopping} />
+                <CartItem onContinueShopping={handleContinueShopping}products={Products} setProducts={setProducts}  />
             ) : Products.length > 0 ? (
                 <div className="product-grid">
-                    {['Lenovo laptop', 'Dell laptop'].map((category) => {
+                    {['Lenovo laptop', 'Dell laptop', 'Apple', 'Keyboard', 'Mouse'].map((category) => {
                         // Filter category products based on searchTerm
                         const categoryProducts = filteredProducts.filter(
                             (product) => product.category === category
@@ -215,24 +293,31 @@ const Home = () => {
                                                     className="product-image"
                                                     src={product.image}
                                                     alt={product.name}
+                                                    
                                                 />
                                                 <div className="product-title">{product.name}</div>
-                                                <div className="product-description">
+                                                {/* <div className="product-description">
                                                     {product.description}
-                                                </div>
+                                                </div> */}
                                                 <div className="product-price">${product.price}</div>
                                                 <button
                                                     className={
-                                                        product.stock === 0
+                                                        product.stock <= 0
                                                             ? 'disabled-button'
                                                             : 'product-button'
                                                     }
                                                     onClick={() => handleAddToCart(product)}
-                                                    disabled={product.stock === 0}
+                                                    // disabled={product.stock === 0}
                                                 >
                                                     {product.stock > 0
                                                         ? 'Add to Cart'
                                                         : 'Out of Stock'}
+                                                </button>
+                                                <button
+                                                    className="details-button"
+                                                    onClick={() => handleOpenDetails(product)} // Opens a new window
+                                                >
+                                                    Open Details
                                                 </button>
                                                 <button
                                                     className="review-button"

@@ -1,5 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from 'react-router-dom';
+
 import '../Login/login.css';
 import axios from 'axios';
 
@@ -8,6 +9,8 @@ import axios from 'axios';
 const Login = () => {
     const errRef = useRef();
     const navigate = useNavigate();
+    
+    
 
     const [user, setUser] = useState('');
     const [pwd, setPwd] = useState('');
@@ -19,13 +22,16 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await axios.post("http://localhost:3002/api/users/login", {
-                username:user,
+                username: user,
                 password: pwd
             });
+            console.log(response.data)
             setToken(response.data.token);
             setMessage("Login Successful");
             localStorage.setItem('token', response.data.token);
             localStorage.setItem('role', response.data.role);
+            localStorage.setItem('username', response.data.username); 
+
 
 
             // Navigate based on user role
@@ -40,20 +46,6 @@ const Login = () => {
         }
         
 
-
-        /*
-        
-        // Retrieve user data from localStorage
-        const storedUser = JSON.parse(localStorage.getItem("user"));
-
-        // Check if the user exists and credentials are valid
-        if (storedUser && storedUser.user === user && storedUser.pwd === pwd) {
-            navigate('/home'); // Redirect to home page on successful login
-        } else {
-            setErrMsg("Invalid username or password");
-            errRef.current.focus();
-        }
-        */
     }
 
     return (

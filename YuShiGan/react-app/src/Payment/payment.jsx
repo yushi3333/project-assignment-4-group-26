@@ -1,23 +1,42 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import "./payment.css"
+import { clearCart } from '../Cart/CartSlice'; 
 
 const payment = () =>{
+    const dispatch = useDispatch(); // Initialize the dispatch function
     const cart = useSelector(state => state.cart.items)
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
+    const TAX_RATE = 0.13; 
+    const DELIVERY_COST = 50.00; 
+    const calculateSubTotal = () =>{
+        
+        // Ensure cart is not empty or undefined
+        if (!cart || cart.length === 0) return "0.00";
+        return cart.reduce((totalCost, item) => totalCost + (item.price * item.quantity), 0);
+    };
+    // Calculate tax amount
+    const calculateTax = (subtotal) => {
+        return subtotal * TAX_RATE;
+    };
+
 
     //calculate the total amount for all products in the cart
     const calculateTotalAmount = () =>{
-        return cart.reduce((totalCost, item) => totalCost + (item.price * item.quantity), 0).toFixed(2)
+        const subtotal = calculateSubTotal();
+        const tax = calculateTax(subtotal);
+        return (subtotal + tax + DELIVERY_COST).toFixed(2);
     };
     const handlePayment = () =>{
+        
         setIsProcessing(true);
         setTimeout(()=>{
             setIsProcessing(false)
             navigate('/confirmation')//navigate to the confimration page
-        },2000)
+            
+        },4000)
     };
     return (
         <div className="payment-container">

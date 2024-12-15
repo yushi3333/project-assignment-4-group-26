@@ -7,7 +7,8 @@ const ProductForm = ({ product, onSubmit }) => {
     description: '',
     price: '',
     stock: '',
-    image:''
+    image:'',
+    productUrl:'',
   });
 
   // When the product prop changes, populate the form
@@ -19,7 +20,8 @@ const ProductForm = ({ product, onSubmit }) => {
         description: product.description,
         price: product.price,
         stock: product.stock,
-        image:product.image
+        image:product.image,
+        productUrl: product.productUrl,
       });
     } else {
       setFormData({
@@ -28,7 +30,8 @@ const ProductForm = ({ product, onSubmit }) => {
         description: '',
         price: '',
         stock: '',
-        image: ''
+        image: '',
+        productUrl: '',
       });
     }
   }, [product]);
@@ -97,6 +100,14 @@ const ProductForm = ({ product, onSubmit }) => {
       onChange = {handleChange}
       placeholder="image url"
       />
+      <input
+        type = "text"
+        name = "productUrl"
+        value = {formData.productUrl}
+        onChange = {handleChange}
+        placeholder="product url from best buy"
+      />
+
       <button type="submit">{product ? 'Update Product' : 'Add Product'}</button>
     </form>
   );
