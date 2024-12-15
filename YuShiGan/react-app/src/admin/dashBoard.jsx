@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ProductForm from './productForm';
-import './dashBoard.css'; // Optionally, add some CSS styles
+import './dashBoard.css'; 
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
@@ -39,7 +39,8 @@ const Dashboard = () => {
         const response = await axios.post('http://localhost:3002/api/products', product);
 
         setProducts([...products, response.data]);
-        fetchProducts(); 
+        
+        window.location.reload(); 
       } catch (error) {
         console.error('Failed to create product', error);
       }
@@ -83,7 +84,7 @@ const Dashboard = () => {
               <th>Price</th>
               <th>Stock</th>
               <th>Description</th>
-              <th>Actions</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -94,6 +95,7 @@ const Dashboard = () => {
                 <td>${product.price}</td>
                 <td>{product.stock}</td>
                 <td>{product.description}</td>
+                
                 <td>
                   <button onClick={() => handleEdit(product)}>Edit</button>
                   <button onClick={() => handleDelete(product._id)}>Delete</button>
