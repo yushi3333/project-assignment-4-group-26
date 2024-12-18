@@ -1,7 +1,7 @@
 const https = require("https");
 
-const username = "Yushi_62gLj";
-const password = "Gys008111911=";
+const username = "";
+const password = "=";
 const body = {
     source: "universal",
     url: "https://www.bestbuy.com/site/lenovo-yoga-book-9i-2-in-1-13-3-2-8k-dual-screen-oled-touchscreen-laptop-intel-core-ultra-7-155u-with-16gb-memory-1tb-ssd-tidal-teal/6571365.p?skuId=6571365",
